@@ -3,6 +3,8 @@
 source .env
 
 for ARCH in $DEB_ARCH; do
+  export DEB_BUILD_ARCH=$ARCH
+
   # Update packages
   apt update && apt upgrade -y
 
