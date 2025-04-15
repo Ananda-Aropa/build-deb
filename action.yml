@@ -13,6 +13,11 @@ inputs:
       The architecture(s) to build the package for
     required: true
     default: "amd64"
+  docker_arch_specific:
+    description: |
+      Force docker to use arch-specific container images
+    required: true
+    default: false
   build_arguments:
     description: |
       Arguments to pass to the command dpkg-buildpackage
@@ -121,7 +126,17 @@ runs:
         for ARCH in ${{ inputs.arch }}; do
           dpkg-architecture -A $ARCH > .build_env
           docker buildx create --use --name debian-deb-$ARCH --buildkitd-flags '--allow-insecure-entitlement security.insecure'
-          docker buildx build --builder debian-deb-$ARCH -f ${{ github.action_path }}/Dockerfile -t debian-$ARCH --allow security.insecure --output type=tar,dest=build-$ARCH.tar .
+          if [ '${{ inputs.docker_arch_specific }}' = true ]; then
+            PLATFORM=$ARCH
+          else
+            PLATFORM=$(dpkg --print-architecture)
+          fi
+          case "$PLATFORM" in
+          i386) PLATFORM=386 ;;
+          arm64) PLATFORM=arm64/v8 ;;
+          *) ;;
+          esac
+          docker buildx build --builder debian-deb-$ARCH --platform linux/$PLATFORM -f ${{ github.action_path }}/Dockerfile -t debian-$ARCH --allow security.insecure --output type=tar,dest=build-$ARCH.tar .
         done
       shell: bash
 
