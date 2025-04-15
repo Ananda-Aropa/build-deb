@@ -120,33 +120,34 @@ runs:
     - name: Set up Docker Buildx
       uses: docker/setup-buildx-action@v3
 
-    - name: Build Docker image
+    - name: Build packages using Docker
       run: |
         cp ${{ github.action_path }}/action_build.sh .
         for ARCH in ${{ inputs.arch }}; do
           dpkg-architecture -A $ARCH > .build_env
+
           docker buildx create --use --name debian-deb-$ARCH --buildkitd-flags '--allow-insecure-entitlement security.insecure'
+          
           if [ '${{ inputs.docker_arch_specific }}' = true ]; then
             PLATFORM=$ARCH
           else
             PLATFORM=$(dpkg --print-architecture)
           fi
+
           case "$PLATFORM" in
           i386) PLATFORM=386 ;;
           arm64) PLATFORM=arm64/v8 ;;
           *) ;;
           esac
-          docker buildx build --builder debian-deb-$ARCH --platform linux/$PLATFORM -f ${{ github.action_path }}/Dockerfile -t debian-$ARCH --allow security.insecure --output type=tar,dest=build-$ARCH.tar .
-        done
-      shell: bash
 
-    - name: Export build files
-      run: |
-        for ARCH in ${{ inputs.arch }}; do
+          # Build image
+          docker buildx build --builder debian-deb-$ARCH --platform linux/$PLATFORM -f ${{ github.action_path }}/Dockerfile -t debian-$ARCH --allow security.insecure --output type=tar,dest=build-$ARCH.tar .
+
+          # Export
           mkdir -p build
           sudo tar -C build -psxf build-$ARCH.tar
           bash -c 'cp build/*.{deb,udeb,buildinfo,changes} . | :'
-          sudo rm -rf build
+          sudo rm -rf build build-$ARCH.tar
         done
       shell: bash
 
