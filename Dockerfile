@@ -5,6 +5,4 @@ COPY . /build
 WORKDIR /build
 
 # Build binary package
-RUN ./action_build.sh
-
-# Gen
+ENTRYPOINT ./action_build.sh

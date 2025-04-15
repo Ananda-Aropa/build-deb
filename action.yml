@@ -10,7 +10,7 @@ inputs:
     default: "debian:latest"
   arch:
     description: |
-      The architecture to build the package for
+      The architecture(s) to build the package for
     required: true
     default: "amd64"
   build_arguments:
