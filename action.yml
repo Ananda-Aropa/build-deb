@@ -61,7 +61,7 @@ outputs:
   artifact_path:
     description: |
       The path to the generated DEB packages, build infomation and metadata file
-    value: "built-deb-files-${{ inputs.arch }}.zip"
+    value: "built-deb-files.zip"
 runs:
   using: "composite"
   steps:
@@ -118,15 +118,21 @@ runs:
     - name: Build Docker image
       run: |
         cp ${{ github.action_path }}/action_build.sh .
-        docker buildx create --use --name debian-deb --buildkitd-flags '--allow-insecure-entitlement security.insecure'
-        docker buildx build --builder debian-deb -f ${{ github.action_path }}/Dockerfile -t debian --allow security.insecure --output type=tar,dest=build.tar .
+        for ARCH in ${{ inputs.arch }}; do
+          dpkg-architecture -A $ARCH > .build_env
+          docker buildx create --use --name debian-deb-$ARCH --buildkitd-flags '--allow-insecure-entitlement security.insecure'
+          docker buildx build --builder debian-deb-$ARCH -f ${{ github.action_path }}/Dockerfile -t debian-$ARCH --allow security.insecure --output type=tar,dest=build-$ARCH.tar .
+        done
       shell: bash
 
     - name: Export build files
       run: |
-        mkdir build
-        sudo tar -C build -psxf build.tar
-        bash -c 'cp build/*.{deb,udeb,buildinfo,changes} . | :'
+        for ARCH in ${{ inputs.arch }}; do
+          mkdir -p build
+          sudo tar -C build -psxf build-$ARCH.tar
+          bash -c 'cp build/*.{deb,udeb,buildinfo,changes} . | :'
+          sudo rm -rf build
+        done
       shell: bash
 
     - name: Generate metadata.yml
@@ -137,7 +143,7 @@ runs:
       shell: bash
 
     - name: Compress build files
-      run: zip -j 'built-deb-files-${{ inputs.arch }}.zip' *.deb *.udeb *.buildinfo *.changes metadata.yml
+      run: zip -j 'built-deb-files.zip' *.deb *.udeb *.buildinfo *.changes metadata.yml
       shell: bash
 
     - name: Clean up
