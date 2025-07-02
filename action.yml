@@ -145,7 +145,7 @@ runs:
           docker buildx build --builder debian-deb-$ARCH --platform linux/$PLATFORM -f ${{ github.action_path }}/Dockerfile -t debian-$ARCH --allow security.insecure --output type=local,dest=build-$ARCH --rm .
 
           # Export
-          bash -c 'cp build-$ARCH/*.{deb,udeb,buildinfo,changes} . | :'
+          bash -c "cp build-$ARCH/*.{deb,udeb,buildinfo,changes} . | :"
           sudo rm -rf build-$ARCH
         done
       shell: bash
