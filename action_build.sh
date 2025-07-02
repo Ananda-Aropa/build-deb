@@ -44,4 +44,4 @@ source .build_env
 dpkg-buildpackage $DEB_BUILD_ARGS
 
 # Uninstall all dependencies
-yes | apt autoremove --purge -y debhelper build-essential grep mawk $dependencies
+yes | apt autoremove --purge --allow-remove-essential -y debhelper build-essential $dependencies

@@ -141,13 +141,12 @@ runs:
           esac
 
           # Build image
-          docker buildx build --builder debian-deb-$ARCH --platform linux/$PLATFORM -f ${{ github.action_path }}/Dockerfile -t debian-$ARCH --allow security.insecure --output type=tar,dest=build-$ARCH.tar --rm .
+          mkdir -p build-$ARCH
+          docker buildx build --builder debian-deb-$ARCH --platform linux/$PLATFORM -f ${{ github.action_path }}/Dockerfile -t debian-$ARCH --allow security.insecure --output type=local,dest=build-$ARCH --rm .
 
           # Export
-          mkdir -p build
-          sudo tar -C build -psxf build-$ARCH.tar
-          bash -c 'cp build/*.{deb,udeb,buildinfo,changes} . | :'
-          sudo rm -rf build build-$ARCH.tar
+          bash -c 'cp build-$ARCH/*.{deb,udeb,buildinfo,changes} . | :'
+          sudo rm -rf build-$ARCH
         done
       shell: bash
 
