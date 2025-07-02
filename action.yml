@@ -1,4 +1,4 @@
-name: 'Build DEB package'
+name: 'Build DEB package explicitly'
 description: |
   Build a DEB package and produce artifact for the current project
 inputs:
