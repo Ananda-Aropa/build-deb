@@ -27,6 +27,9 @@ for p in $(dpkg-checkbuilddeps 2>&1 | grep -i 'build dependencies' | awk -F ':' 
 done
 yes | apt install -y $dependencies || :
 
+# Clean up apt cache
+apt autoclean -y && rm -rf /var/lib/apt/lists/*
+
 export DEBEMAIL DEBFULLNAME DEB_BUILD_OPTIONS DEB_BUILD_PROFILES
 
 if [ "$GPG_SECRET" ]; then
@@ -39,3 +42,6 @@ source .build_env
 
 # Build binary package
 dpkg-buildpackage $DEB_BUILD_ARGS
+
+# Uninstall all dependencies
+yes | apt autoremove --purge -y debhelper build-essential grep mawk $dependencies
