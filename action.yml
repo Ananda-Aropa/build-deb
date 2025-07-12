@@ -62,6 +62,11 @@ inputs:
       Generate the .orig source package
     required: false
     default: "false"
+  docker_archive:
+    description: |
+      Export docker build output to a local archive
+    required: true
+    default: "false"
 outputs:
   artifact_path:
     description: |
@@ -142,9 +147,19 @@ runs:
 
           # Build image
           mkdir -p build-$ARCH
-          docker buildx build --builder debian-deb-$ARCH --platform linux/$PLATFORM -f ${{ github.action_path }}/Dockerfile -t debian-$ARCH --allow security.insecure --output type=local,dest=build-$ARCH --rm .
+          if [ '${{ inputs.docker_archive }}' = true ]; then
+            OUTPUT=type=tar,dest=build-$ARCH/build.tar
+          else
+            OUTPUT=type=local,dest=build-$ARCH
+          fi
+          docker buildx build --builder debian-deb-$ARCH --platform linux/$PLATFORM -f ${{ github.action_path }}/Dockerfile -t debian-$ARCH --allow security.insecure --output $OUTPUT --rm .
 
           # Export
+          if [ '${{ inputs.docker_archive }}' = true ]; then
+            mkdir -p build-$ARCH
+            tar -xf build-$ARCH/build.tar -C build-$ARCH $(tar -tf build-$ARCH/build.tar | grep -E '\.(u?deb|buildinfo|changes)' | xargs)
+            rm -f build-$ARCH/build.tar
+          fi
           bash -c "cp build-$ARCH/*.{deb,udeb,buildinfo,changes} . | :"
           sudo rm -rf build-$ARCH
         done
