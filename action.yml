@@ -157,7 +157,7 @@ runs:
           # Export
           if [ '${{ inputs.docker_archive }}' = true ]; then
             mkdir -p build-$ARCH
-            tar -xf build-$ARCH/build.tar -C build-$ARCH $(tar -tf build-$ARCH/build.tar | grep -E '\.(u?deb|buildinfo|changes)' | xargs)
+            tar -xf build-$ARCH/build.tar -C build-$ARCH $(tar -tf build-$ARCH/build.tar | grep -E '\.(u?deb|buildinfo|changes)$' | xargs)
             rm -f build-$ARCH/build.tar
           fi
           bash -c "cp build-$ARCH/*.{deb,udeb,buildinfo,changes} . | :"
