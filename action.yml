@@ -1,4 +1,4 @@
-name: 'Build DEB package explicitly'
+name: 'aaropa_builder_package'
 description: |
   Build a DEB package and produce artifact for the current project
 inputs:
