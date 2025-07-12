@@ -17,7 +17,7 @@ inputs:
     description: |
       Force docker to use arch-specific container images
     required: true
-    default: false
+    default: "false"
   build_arguments:
     description: |
       Arguments to pass to the command dpkg-buildpackage
@@ -61,7 +61,7 @@ inputs:
     description: |
       Generate the .orig source package
     required: false
-    default: false
+    default: "false"
 outputs:
   artifact_path:
     description: |
