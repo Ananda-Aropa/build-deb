@@ -23,7 +23,11 @@ fi
 
 dependencies=""
 for p in $(dpkg-checkbuilddeps 2>&1 | grep -i 'build dependencies' | awk -F ':' '{print $4}') ${DEB_ADD_DEPS}; do
-  case "$p" in '('* | *')') ;; *) dependencies="$dependencies $p:$ARCH" ;; esac
+  case "$p" in 
+  '('* | *')') ;;
+  *:*) dependencies="$dependencies $p" ;;
+  *) dependencies="$dependencies $p:$ARCH" ;;
+  esac
 done
 yes | apt install -y $dependencies || :
 
