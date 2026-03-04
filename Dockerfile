@@ -12,5 +12,4 @@ RUN ./action_build.sh
 # EXPORT
 FROM scratch AS export
 
-COPY --from=builder /artifacts/ /
-RUN mv /artifacts/* /
+COPY --from=builder /artifacts/* /
