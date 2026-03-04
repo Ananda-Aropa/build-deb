@@ -152,7 +152,7 @@ runs:
           else
             OUTPUT=type=local,dest=build-$ARCH
           fi
-          docker buildx build --builder debian-deb-$ARCH --platform linux/$PLATFORM -f ${{ github.action_path }}/Dockerfile -t debian-$ARCH --allow security.insecure --output $OUTPUT --rm .
+          docker buildx build --builder debian-deb-$ARCH --platform linux/$PLATFORM -f ${{ github.action_path }}/Dockerfile -t debian-$ARCH --target export --allow security.insecure --output $OUTPUT --rm .
 
           # Export
           if [ '${{ inputs.docker_archive }}' = true ]; then
