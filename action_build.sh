@@ -22,7 +22,7 @@ if [ "$ARCH" != $(dpkg --print-architecture) ]; then
 fi
 
 dependencies=""
-for p in $(dpkg-checkbuilddeps 2>&1 | grep -i 'build dependencies' | awk -F ':' '{print $4}'); do
+for p in $(dpkg-checkbuilddeps 2>&1 | grep -i 'build dependencies' | awk -F ':' '{print $4}') ${DEB_ADD_DEPS}; do
   case "$p" in '('* | *')') ;; *) dependencies="$dependencies $p:$ARCH" ;; esac
 done
 yes | apt install -y $dependencies || :

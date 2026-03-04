@@ -67,6 +67,11 @@ inputs:
       Export docker build output to a local archive
     required: true
     default: "false"
+  build_dependency_packages:
+    description: |
+      Additional packages to install before building the package
+    required: false
+    default: ""
 outputs:
   artifact_path:
     description: |
@@ -115,6 +120,7 @@ runs:
         echo "DEB_BUILD_ARGS='${{ inputs.build_arguments }}'" >>.env
         echo "DEB_BUILD_OPTIONS='${{ inputs.build_options }}'" >>.env
         echo "DEB_BUILD_PROFILES='${{ inputs.build_profiles }}'" >>.env
+        echo "DEB_ADD_DEPS='${{ inputs.build_dependency_packages }}'" >>.env
         echo "GPG_SECRET='${{ inputs.gpg_signing_key }}'" >>.env
         cat .env
       shell: bash
