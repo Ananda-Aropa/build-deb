@@ -9,10 +9,8 @@ WORKDIR /build
 # Build binary package
 RUN ./action_build.sh
 
-RUN mkdir /artifacts
-RUN mv /*.{deb,udeb,buildinfo,changes} /artifacts
-
 # EXPORT
 FROM scratch AS export
 
-COPY --from=builder /artifacts/* /
+COPY --from=builder /artifacts/ /
+RUN mv /artifacts/* /

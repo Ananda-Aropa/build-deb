@@ -45,3 +45,7 @@ dpkg-buildpackage $DEB_BUILD_ARGS || exit 1
 
 # Uninstall all dependencies
 yes | apt autoremove --purge --allow-remove-essential -y debhelper build-essential $dependencies
+
+# Move artifacts
+mkdir -p /artifacts
+find / -maxdepth 1 -type f -exec mv -t /artifacts '{}' \;
