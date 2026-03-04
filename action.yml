@@ -77,7 +77,7 @@ runs:
   steps:
     - name: Set Dockerfile distro
       run: |
-        sed -i -r 's|^FROM .+$|FROM ${{ inputs.distro }}|gi' ${{ github.action_path }}/Dockerfile
+        sed -i -r 's|^FROM .+ AS builder$|FROM ${{ inputs.distro }} AS builder|gi' ${{ github.action_path }}/Dockerfile
       shell: bash
 
     - name: Setup maintainer info
