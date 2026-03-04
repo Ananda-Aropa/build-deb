@@ -1,7 +1,7 @@
 # syntax=docker/dockerfile:1-labs
 
-### BUILD
-FROM debian:latest as builder
+# BUILD
+FROM debian:latest AS builder
 
 COPY . /build
 WORKDIR /build
@@ -9,10 +9,10 @@ WORKDIR /build
 # Build binary package
 RUN ./action_build.sh
 
-### EXPORT
+RUN mkdir /artifacts
+RUN mv /*.{deb,udeb,buildinfo,changes} /artifacts
+
+# EXPORT
 FROM scratch AS export
 
-COPY --from=builder /*.deb /
-COPY --from=builder /*.udeb /
-COPY --from=builder /*.buildinfo /
-COPY --from=builder /*.changes /
+COPY --from=builder /artifacts/* /
